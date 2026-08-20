@@ -1,0 +1,33 @@
+@font-face{font-family:'Inter';src:url('../assets/fonts/Inter-Regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Inter';src:url('../assets/fonts/Inter-Medium.ttf') format('truetype');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'Inter';src:url('../assets/fonts/Inter-SemiBold.ttf') format('truetype');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Inter';src:url('../assets/fonts/Inter-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Archivo';src:url('../assets/fonts/Archivo-SemiBold.ttf') format('truetype');font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:'Archivo';src:url('../assets/fonts/Archivo-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:'Archivo';src:url('../assets/fonts/Archivo-Black.ttf') format('truetype');font-weight:900;font-style:normal;font-display:swap}
+:root{
+--font-sans:'Inter','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+--font-heading:'Archivo','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+--font-weight-thin:100;
+--font-weight-light:300;
+--font-weight-regular:400;
+--font-weight-medium:500;
+--font-weight-portfolio-label:400;
+--font-weight-semibold:600;
+--font-weight-bold:700;
+--font-weight-black:900;
+--text-2xs:.7rem;
+--text-xs:.8rem;
+--text-sm:.9rem;
+--text-base:1rem;
+--text-md:1.05rem;
+--text-lg:1.1rem;
+--text-xl:1.2rem;
+--text-2xl:1.5rem;
+--text-3xl:2rem;
+--text-4xl:2.5rem;
+--text-hero-title:clamp(2rem,1.4rem + 2.2vw,3.1rem); /* @kind other */
+--text-hero-subtitle:clamp(1.05rem,.95rem + .5vw,1.3rem); /* @kind other */
+--leading-body:1.6;
+--tracking-hero:-0.015em;
+}

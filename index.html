@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GGC Construcciones SpA | Obras Civiles y Construcción en General</title>
+    <link rel="stylesheet" href="design-system/styles.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo">
+                <span class="logo-mark">GGC</span>
+                <span class="logo-kicker">Construcciones SpA</span>
+            </h1>
+            <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Abrir menú">
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+            </button>
+            <nav>
+                <ul class="nav-links" id="primary-nav">
+                    <li><a href="index.html" class="active">Inicio</a></li>
+                    <li><a href="nosotros.html">Nosotros</a></li>
+                    <li><a href="servicios.html">Servicios</a></li>
+                    <li><a href="proyectos.html">Proyectos</a></li>
+                    <li><a href="contacto.html" class="btn-primary-small">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="inicio" class="hero-section has-video">
+        <video class="hero-video"
+               autoplay muted playsinline preload="metadata"
+               poster="assets/ggc_intro_poster.jpg"
+               aria-label="Presentación en video de GGC Construcciones SpA">
+            <source src="assets/ggc_intro.webm" type="video/webm">
+            <source src="assets/ggc_intro.mp4" type="video/mp4">
+        </video>
+            <div class="container hero-content">
+                <h2>Soluciones Integrales en Obras Civiles y Construcción</h2>
+                <div class="subtitle"><b>Construimos el futuro con estándares de excelencia, seguridad y compromiso en cada proyecto.</b></div>
+                <div class="btn-container">
+                <a href="nosotros.html" class="btn-primary">Nosotros</a>
+                <a href="que-hacemos.html" class="btn-primary">Servicios</a>
+                <a href="proyectos.html" class="btn-primary">Proyectos</a>
+                <a href="contacto.html" class="btn-primary">Contáctanos</a>
+                </div>
+            </div>
+        <button type="button" class="hero-play-btn" aria-label="Reproducir video de presentación">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            <span>Ver el video</span>
+        </button>
+        <button type="button" class="hero-sound-btn" aria-pressed="false"
+                data-label-on="Silenciar" data-label-off="Activar sonido">
+            <svg class="icon icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H3v6h3l5 4V5z"/>
+                <line x1="16" y1="9" x2="22" y2="15"/>
+                <line x1="22" y1="9" x2="16" y2="15"/>
+            </svg>
+            <svg class="icon icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H3v6h3l5 4V5z"/>
+                <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+                <path d="M18.5 6a9 9 0 0 1 0 12"/>
+            </svg>
+            <span class="hero-sound-label">Activar sonido</span>
+        </button>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-container">
+            <nav>
+                <ul class="footer-links" id="footer-nav">
+                    <li><a href="interno.html" class="btn-footer-interno">Acceso Interno</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="container">
+            <p>&copy; 2026 GGC Construcciones SpA. Todos los derechos reservados.</p>
+            <a href="corporativo.html" class="btn-footer">Información Corporativa y Políticas de Uso</a>
+        </div>
+    </footer>
+
+    <script src="assets/hero.js"></script>
+    <script src="assets/nav.js"></script>
+</body>
+</html>

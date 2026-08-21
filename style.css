@@ -958,6 +958,12 @@ footer {
     color: var(--primary-color) !important;
 }
 
+button.btn-footer-interno {
+    border: none;
+    font: inherit;
+    cursor: pointer;
+}
+
 footer p{
     margin-bottom:0.5rem;
 }

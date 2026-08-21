@@ -6,6 +6,7 @@
     <title>Panel de Administración | GGC Construcciones SpA</title>
     <link rel="stylesheet" href="../../design-system/styles.css">
     <link rel="stylesheet" href="../../style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
@@ -53,7 +54,7 @@
         <div class="container footer-container">
             <nav>
                 <ul class="footer-links" id="footer-nav">
-                    <li><a href="../../interno.html" class="btn-footer-interno">Acceso Interno</a></li>
+                    <li><button type="button" id="logout-btn" class="btn-footer-interno">Cerrar Sesión</button></li>
                 </ul>
             </nav>
         </div>
@@ -63,5 +64,16 @@
     </footer>
 
     <script src="../nav.js"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(
+            'https://wpxiyuysuygesmdclctz.supabase.co',
+            'sb_publishable_yHYE2ev7n-xbv1WSRpuaXg_e6SmH3gG'
+        );
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = '../../interno.html';
+        });
+    </script>
 </body>
 </html>

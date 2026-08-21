@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcar Asistencia | GGC Construcciones SpA</title>
+    <link rel="stylesheet" href="../../design-system/styles.css">
+    <link rel="stylesheet" href="../../style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo">
+                <span class="logo-mark">GGC</span>
+                <span class="logo-kicker">Construcciones SpA</span>
+            </h1>
+            <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Abrir menú">
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+            </button>
+            <nav>
+                <ul class="nav-links" id="primary-nav">
+                    <li><a href="../../index.html">Inicio</a></li>
+                    <li><a href="../../nosotros.html">Nosotros</a></li>
+                    <li><a href="../../servicios.html">Servicios</a></li>
+                    <li><a href="../../proyectos.html">Proyectos</a></li>
+                    <li><a href="../../contacto.html" class="btn-primary-small">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <h2>Marcar Asistencia</h2>
+                <p>Registra tu hora de entrada y salida.</p>
+            </div>
+        </section>
+
+        <section class="portal-detail container">
+            <div class="portal-panel">
+                <div class="btn-container">
+                    <button type="button" id="punch-btn" class="btn-primary" disabled>Cargando...</button>
+                </div>
+
+                <p id="status" class="login-status" aria-live="polite"></p>
+
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Horas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-container">
+            <nav>
+                <ul class="footer-links" id="footer-nav">
+                    <li><a href="portal.html" class="btn-footer-interno">Volver al Portal</a></li>
+                    <li><button type="button" id="logout-btn" class="btn-footer-interno">Cerrar Sesión</button></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="container">
+            <p>&copy; 2026 GGC Construcciones SpA. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="../nav.js"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(
+            'https://wpxiyuysuygesmdclctz.supabase.co',
+            'sb_publishable_yHYE2ev7n-xbv1WSRpuaXg_e6SmH3gG'
+        );
+
+        const punchBtn = document.getElementById('punch-btn');
+        const statusEl = document.getElementById('status');
+        const historyBody = document.getElementById('history-body');
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = '../../interno.html';
+        });
+
+        function formatTime(iso) {
+            return new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+        }
+
+        function formatDate(iso) {
+            return new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso));
+        }
+
+        function computeHours(inIso, outIso) {
+            if (!outIso) return 'En curso';
+            const hours = (new Date(outIso) - new Date(inIso)) / 3600000;
+            return hours.toFixed(2);
+        }
+
+        function renderOpenShift(openShift) {
+            if (openShift) {
+                punchBtn.textContent = 'Marcar Salida';
+                punchBtn.classList.add('btn-clock-active');
+                statusEl.classList.remove('is-error');
+                statusEl.textContent = 'Turno iniciado a las ' + formatTime(openShift.clocked_in_at) + '.';
+            } else {
+                punchBtn.textContent = 'Marcar Entrada';
+                punchBtn.classList.remove('btn-clock-active');
+                statusEl.classList.remove('is-error');
+                statusEl.textContent = 'No has marcado entrada hoy.';
+            }
+            punchBtn.disabled = false;
+        }
+
+        async function loadOpenShift() {
+            const { data, error } = await supabaseClient
+                .from('time_entries')
+                .select('*')
+                .is('clocked_out_at', null)
+                .maybeSingle();
+
+            if (error) {
+                console.error(error);
+                statusEl.classList.add('is-error');
+                statusEl.textContent = 'No se pudo cargar tu estado actual.';
+                return;
+            }
+
+            renderOpenShift(data);
+        }
+
+        async function loadHistory() {
+            const { data, error } = await supabaseClient
+                .from('time_entries')
+                .select('*')
+                .order('clocked_in_at', { ascending: false })
+                .limit(20);
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            historyBody.innerHTML = '';
+            data.forEach((entry) => {
+                const row = document.createElement('tr');
+                row.innerHTML =
+                    '<td>' + formatDate(entry.clocked_in_at) + '</td>' +
+                    '<td>' + formatTime(entry.clocked_in_at) + '</td>' +
+                    '<td>' + (entry.clocked_out_at ? formatTime(entry.clocked_out_at) : '—') + '</td>' +
+                    '<td>' + computeHours(entry.clocked_in_at, entry.clocked_out_at) + '</td>';
+                historyBody.appendChild(row);
+            });
+        }
+
+        punchBtn.addEventListener('click', async () => {
+            punchBtn.disabled = true;
+            const isClockingOut = punchBtn.classList.contains('btn-clock-active');
+            const { error } = await supabaseClient.rpc(isClockingOut ? 'punch_out' : 'punch_in');
+
+            if (error) {
+                console.error(error);
+                statusEl.classList.add('is-error');
+                statusEl.textContent = error.message;
+                punchBtn.disabled = false;
+                return;
+            }
+
+            await loadOpenShift();
+            await loadHistory();
+        });
+
+        (async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = '../../interno.html';
+                return;
+            }
+
+            await loadOpenShift();
+            await loadHistory();
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Asistencia | GGC Construcciones SpA</title>
+    <link rel="stylesheet" href="../../design-system/styles.css">
+    <link rel="stylesheet" href="../../style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="container header-container">
+            <h1 class="logo">
+                <span class="logo-mark">GGC</span>
+                <span class="logo-kicker">Construcciones SpA</span>
+            </h1>
+            <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Abrir menú">
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+            </button>
+            <nav>
+                <ul class="nav-links" id="primary-nav">
+                    <li><a href="../../index.html">Inicio</a></li>
+                    <li><a href="../../nosotros.html">Nosotros</a></li>
+                    <li><a href="../../servicios.html">Servicios</a></li>
+                    <li><a href="../../proyectos.html">Proyectos</a></li>
+                    <li><a href="../../contacto.html" class="btn-primary-small">Contacto</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-title is-admin">
+            <div class="container">
+                <h2>Registro de Asistencia</h2>
+                <p>Historial de entradas y salidas de todos los colaboradores.</p>
+            </div>
+        </section>
+
+        <section class="portal-detail container" style="max-width: 900px;">
+            <div class="portal-panel is-admin">
+                <div class="attendance-filters">
+                    <div>
+                        <label for="start-date">Desde</label>
+                        <input type="date" id="start-date">
+                    </div>
+                    <div>
+                        <label for="end-date">Hasta</label>
+                        <input type="date" id="end-date">
+                    </div>
+                    <button type="button" id="filter-btn" class="btn-primary">Filtrar</button>
+                </div>
+
+                <p id="status" class="login-status" aria-live="polite"></p>
+
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Trabajador</th>
+                            <th>Fecha</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Horas</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <dialog id="edit-dialog" class="edit-dialog">
+        <form method="dialog">
+            <label for="edit-in">Entrada</label>
+            <input type="datetime-local" id="edit-in" required>
+
+            <label for="edit-out">Salida</label>
+            <input type="datetime-local" id="edit-out">
+
+            <div class="btn-container">
+                <button type="submit" id="save-edit-btn" class="btn-primary">Guardar</button>
+                <button type="button" id="cancel-edit-btn" class="btn-primary" style="background-color: var(--gray-200);">Cancelar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <footer>
+        <div class="container footer-container">
+            <nav>
+                <ul class="footer-links" id="footer-nav">
+                    <li><a href="superportal.html" class="btn-footer-interno">Volver al Panel</a></li>
+                    <li><button type="button" id="logout-btn" class="btn-footer-interno">Cerrar Sesión</button></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="container">
+            <p>&copy; 2026 GGC Construcciones SpA. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="../nav.js"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(
+            'https://wpxiyuysuygesmdclctz.supabase.co',
+            'sb_publishable_yHYE2ev7n-xbv1WSRpuaXg_e6SmH3gG'
+        );
+
+        const statusEl = document.getElementById('status');
+        const historyBody = document.getElementById('history-body');
+        const startInput = document.getElementById('start-date');
+        const endInput = document.getElementById('end-date');
+        const filterBtn = document.getElementById('filter-btn');
+        const editDialog = document.getElementById('edit-dialog');
+        const editInInput = document.getElementById('edit-in');
+        const editOutInput = document.getElementById('edit-out');
+        const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+        let currentUserId = null;
+        let editingRowId = null;
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = '../../interno.html';
+        });
+
+        function pad(n) {
+            return String(n).padStart(2, '0');
+        }
+
+        function toDateInputValue(d) {
+            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+        }
+
+        function toDatetimeLocalValue(iso) {
+            const d = new Date(iso);
+            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        }
+
+        function formatTime(iso) {
+            return new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+        }
+
+        function formatDate(iso) {
+            return new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(iso));
+        }
+
+        function computeHours(inIso, outIso) {
+            if (!outIso) return 'En curso';
+            const hours = (new Date(outIso) - new Date(inIso)) / 3600000;
+            return hours.toFixed(2);
+        }
+
+        function getMonday(d) {
+            d = new Date(d);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        }
+
+        function openEditDialog(entry) {
+            editingRowId = entry.id;
+            editInInput.value = toDatetimeLocalValue(entry.clocked_in_at);
+            editOutInput.value = entry.clocked_out_at ? toDatetimeLocalValue(entry.clocked_out_at) : '';
+            editDialog.showModal();
+        }
+
+        cancelEditBtn.addEventListener('click', () => {
+            editDialog.close();
+        });
+
+        editDialog.addEventListener('close', () => {
+            editingRowId = null;
+        });
+
+        document.getElementById('save-edit-btn').addEventListener('click', async (event) => {
+            event.preventDefault();
+
+            if (!editInInput.value) return;
+
+            const { error } = await supabaseClient
+                .from('time_entries')
+                .update({
+                    clocked_in_at: new Date(editInInput.value).toISOString(),
+                    clocked_out_at: editOutInput.value ? new Date(editOutInput.value).toISOString() : null,
+                    edited_by: currentUserId,
+                    edited_at: new Date().toISOString()
+                })
+                .eq('id', editingRowId);
+
+            if (error) {
+                console.error(error);
+                statusEl.classList.add('is-error');
+                statusEl.textContent = 'No se pudo guardar la corrección: ' + error.message;
+                return;
+            }
+
+            editDialog.close();
+            await loadHistory();
+        });
+
+        async function loadHistory() {
+            const startDate = new Date(startInput.value + 'T00:00:00');
+            const endDate = new Date(endInput.value + 'T00:00:00');
+            endDate.setDate(endDate.getDate() + 1);
+
+            const { data, error } = await supabaseClient
+                .from('time_entries')
+                .select('*, profiles(email)')
+                .gte('clocked_in_at', startDate.toISOString())
+                .lt('clocked_in_at', endDate.toISOString())
+                .order('clocked_in_at', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                statusEl.classList.add('is-error');
+                statusEl.textContent = 'No se pudo cargar el historial.';
+                return;
+            }
+
+            statusEl.classList.remove('is-error');
+            statusEl.textContent = data.length === 0 ? 'Sin registros en este período.' : '';
+
+            historyBody.innerHTML = '';
+            data.forEach((entry) => {
+                const row = document.createElement('tr');
+                row.innerHTML =
+                    '<td>' + (entry.profiles ? entry.profiles.email : entry.user_id) + '</td>' +
+                    '<td>' + formatDate(entry.clocked_in_at) + '</td>' +
+                    '<td>' + formatTime(entry.clocked_in_at) + '</td>' +
+                    '<td>' + (entry.clocked_out_at ? formatTime(entry.clocked_out_at) : '—') + '</td>' +
+                    '<td>' + computeHours(entry.clocked_in_at, entry.clocked_out_at) + '</td>' +
+                    '<td><button type="button" class="btn-link-small">Editar</button></td>';
+                row.querySelector('.btn-link-small').addEventListener('click', () => openEditDialog(entry));
+                historyBody.appendChild(row);
+            });
+        }
+
+        filterBtn.addEventListener('click', loadHistory);
+
+        (async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = '../../interno.html';
+                return;
+            }
+            currentUserId = session.user.id;
+
+            const { data: profile } = await supabaseClient
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', session.user.id)
+                .single();
+
+            if (!profile || !profile.is_admin) {
+                window.location.href = 'portal.html';
+                return;
+            }
+
+            const today = new Date();
+            startInput.value = toDateInputValue(getMonday(today));
+            endInput.value = toDateInputValue(today);
+
+            await loadHistory();
+        })();
+    </script>
+</body>
+</html>

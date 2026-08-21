@@ -1,7 +1,9 @@
 {
   "name": "autumn-haze-0590",
   "compatibility_date": "2026-08-20",
+  "main": "worker/index.js",
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   }
 }

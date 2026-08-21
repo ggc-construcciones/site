@@ -40,7 +40,7 @@
         </section>
 
         <section class="contact-section container">
-            <form class="contact-form">
+            <form class="contact-form" id="contact-form" novalidate>
                 <div class="form-group">
                     <label for="nombre">Nombre o Empresa</label>
                     <input type="text" id="nombre" name="nombre" required>
@@ -53,7 +53,14 @@
                     <label for="mensaje">Detalles del Proyecto</label>
                     <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
                 </div>
+
+                <div class="hp-field" aria-hidden="true">
+                    <label for="campo_control">No completar este campo</label>
+                    <input type="text" id="campo_control" name="campo_control" tabindex="-1" autocomplete="off">
+                </div>
+
                 <button type="submit" class="btn-primary">Enviar Mensaje</button>
+                <p id="contact-form-status" class="contact-form-status" role="status" aria-live="polite"></p>
             </form>
         </section>
     </main>
@@ -72,5 +79,6 @@
     </footer>
 
     <script src="assets/nav.js"></script>
+    <script src="assets/contact-form.js"></script>
 </body>
 </html>

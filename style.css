@@ -628,7 +628,9 @@ top: clamp(16px, 3vw, 32px); /* Changed from bottom to top */
     border-radius: 8px;
     box-shadow: var(--shadow-item);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
 }
 
 .portal-panel .btn-container {
@@ -839,6 +841,30 @@ top: clamp(16px, 3vw, 32px); /* Changed from bottom to top */
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
+}
+
+.hp-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.contact-form-status {
+    min-height: 1.2em;
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-brand-primary);
+}
+
+.contact-form-status.is-error {
+    color: #c0392b;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* Login / Autenticación */

@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso Colaboradores | GGC Construcciones SpA</title>
+    <title>Iniciar Sesión | GGC Construcciones SpA</title>
     <link rel="stylesheet" href="design-system/styles.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
@@ -32,22 +33,32 @@
     </header>
 
     <main>
-        <section class="page-title">
-            <div class="container">
-                <h2>Portal de Colaboradores</h2>
-                <p>Plataforma exclusiva para el equipo de GGC Construcciones SpA.</p>
-            </div>
-        </section>
+        <section class="login-section container">
+            <div class="login-capsule">
+                <span class="login-capsule-mark">GGC Construcciones</span>
+                <h2>Acceso Interno</h2>
 
-        <section class="about-detail container">
-            <div class="about-item">                
-                <div class="btn-container" style="margin-bottom:1rem; width: 100%; max-width: 400px;">
-                    <a href="https://ggc-inventario.vercel.app/herramientas" class="btn-primary">Ingresar a Control de Inventario</a>
-                    <a href="#" class="btn-primary">Ingresar a Correo Corporativo</a>
-                </div>
-                <p><b>Disponible pronto:</b></p>
-                <div class="btn-container" style="margin-top:0.5rem; width: 100%; max-width: 400px;">
-                    <a href="#" class="btn-primary">Tutorial Control de Inventario</a>
+                <button type="button" id="login-btn" class="btn-google">
+                    <svg class="btn-google-icon" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
+                        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/>
+                        <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z"/>
+                        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"/>
+                    </svg>
+                    <span>Iniciar sesión con Google</span>
+                </button>
+                <p class="login-capsule-subtitle" style="font-size:small">Debes usar tu correo corporativo de Google.</p>
+
+                <p id="status" class="login-status" aria-live="polite"></p>
+
+                <div class="login-divider"></div>
+
+                <p class="login-capsule-subtitle">Si no tienes un correo corporativo, inicia sesión con las credenciales proporcionadas.</p>
+
+                <div class="login-email-form">
+                    <input type="text" id="email" class="login-input" style="font-size:0.9rem !important; text-align:center !important;" placeholder="Usuario" autocomplete="username">
+                    <input type="password" id="password" class="login-input" style="font-size:0.9rem !important; text-align:center !important;" placeholder="Contraseña" autocomplete="current-password">
+                    <button type="button" id="login-email-btn" class="btn-not-google">Iniciar sesión</button>
                 </div>
             </div>
         </section>
@@ -67,5 +78,71 @@
     </footer>
 
     <script src="assets/nav.js"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(
+            'https://wpxiyuysuygesmdclctz.supabase.co',
+            'sb_publishable_yHYE2ev7n-xbv1WSRpuaXg_e6SmH3gG'
+        );
+
+        const loginBtn = document.getElementById('login-btn');
+        const loginEmailBtn = document.getElementById('login-email-btn');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const statusEl = document.getElementById('status');
+
+        loginBtn.addEventListener('click', async () => {
+            loginBtn.disabled = true;
+            statusEl.classList.remove('is-error');
+            statusEl.textContent = 'Redirigiendo a Google...';
+
+            const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
+
+            if (error) {
+                console.error(error);
+                statusEl.classList.add('is-error');
+                statusEl.textContent = 'No se pudo iniciar sesión. Inténtalo nuevamente.';
+                loginBtn.disabled = false;
+            }
+        });
+
+        loginEmailBtn.addEventListener('click', async () => {
+            let email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email) {
+                statusEl.classList.add('is-error');
+                statusEl.textContent = 'Ingresa tu usuario o correo.';
+                return;
+            }
+
+            // Si no escribió un correo completo, asumimos que es un usuario corporativo
+            if (!email.includes('@')) {
+                email = email + '@ggcconstrucciones.cl';
+            }
+
+            loginEmailBtn.disabled = true;
+            statusEl.classList.remove('is-error');
+            statusEl.textContent = 'Verificando credenciales...';
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            loginEmailBtn.disabled = false;
+
+            if (error) {
+                statusEl.classList.add('is-error');
+                statusEl.textContent = 'Error al iniciar sesión: ' + error.message;
+            } else {
+                statusEl.classList.remove('is-error');
+                statusEl.textContent = 'Sesión iniciada como: ' + data.user.email;
+            }
+        });
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                statusEl.classList.remove('is-error');
+                statusEl.textContent = 'Sesión iniciada como: ' + session.user.email;
+            }
+        });
+    </script>
 </body>
 </html>

@@ -692,6 +692,191 @@ top: clamp(16px, 3vw, 32px); /* Changed from bottom to top */
     font-size: 1rem;
 }
 
+/* Login / Autenticación */
+.login-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: var(--space-3xl) 0;
+}
+
+.login-capsule {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    max-width: 380px;
+    background-color: var(--color-surface-page);
+    border-top: 4px solid var(--color-brand-secondary);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-2xl) var(--space-lg);
+    text-align: center;
+}
+
+.login-capsule-mark {
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-black);
+    font-size: var(--text-2xl);
+    letter-spacing: 0.01em;
+    color: var(--color-brand-primary);
+}
+
+.login-capsule h2 {
+    color: var(--color-brand-primary);
+    font-size: var(--text-xl);
+}
+
+.login-capsule-subtitle {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-xs);
+}
+
+.btn-google {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    background-color: var(--white);
+    color: var(--gray-900);
+    font-family: var(--font-sans);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--text-base);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: box-shadow var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                transform var(--dur-fast) var(--ease-out);
+}
+
+.btn-google:hover {
+    border-color: var(--color-brand-secondary);
+    box-shadow: 0 6px 16px rgba(11,37,69,.16);
+    transform: translateY(-1px);
+}
+
+.btn-google:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-card);
+}
+
+.btn-google:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+}
+
+.btn-google:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-google-icon {
+    flex-shrink: 0;
+}
+
+.login-status {
+    min-height: 1.2em;
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-brand-primary);
+}
+
+.login-status.is-error {
+    color: #c0392b;
+}
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-border-subtle);
+}
+
+.login-divider span {
+    padding: 0 var(--space-sm);
+}
+
+.login-email-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    width: 100%;
+}
+
+.login-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-full);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    color: var(--color-text-body);
+    background-color: var(--white);
+    transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.login-input:focus {
+    outline: none;
+    border-color: var(--color-brand-secondary);
+    box-shadow: 0 0 0 3px rgba(252,163,17,.2);
+}
+
+.btn-not-google {
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    background-color: var(--color-brand-primary);
+    color: var(--white);
+    font-family: var(--font-sans);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--text-base);
+    border: 1px solid var(--color-brand-secondary);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.btn-not-google:hover {
+    background-color: var(--color-brand-secondary);
+    color: var(--color-brand-primary);
+    border-color: var(--color-brand-primary);
+        box-shadow: 0 6px 16px rgba(11,37,69,.16);
+    transform: translateY(-1px);
+}
+
+.btn-not-google:active {
+    transform: translateY(1px);
+}
+
+.btn-not-google:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+}
+
+.btn-not-google:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 /* Footer */
 footer {
     background-color: var(--primary-color);

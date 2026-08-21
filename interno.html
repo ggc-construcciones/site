@@ -131,16 +131,28 @@
             if (error) {
                 statusEl.classList.add('is-error');
                 statusEl.textContent = 'Error al iniciar sesión: ' + error.message;
-            } else {
-                statusEl.classList.remove('is-error');
-                statusEl.textContent = 'Sesión iniciada como: ' + data.user.email;
             }
         });
 
-        supabaseClient.auth.onAuthStateChange((event, session) => {
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN') {
                 statusEl.classList.remove('is-error');
                 statusEl.textContent = 'Sesión iniciada como: ' + session.user.email;
+
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('portal')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profileError || !profile) {
+                    console.error(profileError);
+                    statusEl.classList.add('is-error');
+                    statusEl.textContent = 'No se encontró un portal asignado para tu cuenta.';
+                    return;
+                }
+
+                window.location.href = profile.portal;
             }
         });
     </script>

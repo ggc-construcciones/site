@@ -608,6 +608,45 @@ top: clamp(16px, 3vw, 32px); /* Changed from bottom to top */
     font-size: 0.9rem;
 }
 
+/* Portal Privado */
+.portal-detail {
+    display: grid;
+    padding: 2rem 0;
+    max-width: 700px;
+}
+
+.portal-panel {
+    background: var(--background-light);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-item);
+    display: flex;
+    justify-content: center;
+}
+
+.portal-panel .btn-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.page-title.is-admin {
+    background-color: var(--color-brand-primary);
+    color: var(--white);
+}
+
+.page-title.is-admin h2 {
+    color: var(--white);
+}
+
+.page-title.is-admin p {
+    color: rgba(255, 255, 255, .85);
+}
+
+.portal-panel.is-admin {
+    background-color: var(--color-brand-primary);
+    border-top: 4px solid var(--color-brand-secondary);
+}
+
 /* Portafolio / Proyectos */
 .portfolio {
     padding: 4rem 0;

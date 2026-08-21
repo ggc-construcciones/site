@@ -3,3 +3,7 @@
 assets/nosotros.html
 assets/proyectos.html
 worker/
+.dev.vars
+.wrangler/
+.gitignore
+.assetsignore

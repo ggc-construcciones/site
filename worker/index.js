@@ -21,8 +21,19 @@ export default {
 };
 
 async function handleContact(request, env) {
-  if (!env.RESEND_API_KEY) {
-    console.error('RESEND_API_KEY no está configurada como secret de Wrangler.');
+  // Trim guards against stray whitespace/newlines picked up when the secret was
+  // pasted into `wrangler secret put`.
+  const apiKey = String(env.RESEND_API_KEY ?? '').trim();
+
+  // A malformed key is rejected at the HTTP layer by Resend's edge with an empty
+  // 400, which is indistinguishable from an outage — so check the shape up front
+  // and log something actionable instead.
+  if (!apiKey || !/^re_[A-Za-z0-9_-]+$/.test(apiKey)) {
+    console.error(
+      'RESEND_API_KEY ausente o con formato inválido (largo=' +
+        apiKey.length +
+        '). Debe empezar con "re_". Vuelve a cargarla con `wrangler secret put RESEND_API_KEY`.'
+    );
     return json(
       {
         ok: false,
@@ -70,7 +81,7 @@ async function handleContact(request, env) {
     const resendResp = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -83,8 +94,8 @@ async function handleContact(request, env) {
     });
 
     if (!resendResp.ok) {
-      const detail = await resendResp.text().catch(() => '');
-      console.error('Resend API error', resendResp.status, detail);
+      const detail = await resendResp.text().catch((e) => `<no se pudo leer body: ${e}>`);
+      console.error('Resend API error status=' + resendResp.status + ' body=' + detail);
       return json(
         { ok: false, error: 'No se pudo enviar el mensaje. Intenta nuevamente más tarde.' },
         502
@@ -93,7 +104,7 @@ async function handleContact(request, env) {
 
     return json({ ok: true });
   } catch (err) {
-    console.error('Fallo al contactar Resend', err);
+    console.error('Fallo al contactar Resend: ' + (err && err.stack ? err.stack : String(err)));
     return json(
       { ok: false, error: 'No se pudo enviar el mensaje. Intenta nuevamente más tarde.' },
       502

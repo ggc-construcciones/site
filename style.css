@@ -164,6 +164,13 @@ header {
     color: var(--white);
 }
 
+.btn-icon {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
 .btn-primary-small {
     background-color: var(--primary-color);
     color: var(--white) !important;

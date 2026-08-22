@@ -1,2 +1,12 @@
+# Dependencies — reinstalled by `npm ci`, never committed
+node_modules/
+
+# Local secrets for `wrangler dev`
 .dev.vars
+
+# Wrangler local dev state
 .wrangler/
+
+# OS noise
+.DS_Store
+Thumbs.db
